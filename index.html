@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arsip Digital PHDI Provinsi Sulawesi Barat</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        phdiGold: '#D4AF37',
+                        phdiGoldDark: '#B38F24',
+                        phdiRed: '#B91C1C',
+                        phdiRedDark: '#991B1B',
+                        phdiBlue: '#1E3A8A',
+                        phdiBlueLight: '#2563EB',
+                    },
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .sidebar-transition { transition: all 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-phdiBlue via-phdiRed to-phdiGold p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+            <div class="p-8 text-center bg-gray-50 border-b border-gray-100">
+                <div class="w-20 h-20 mx-auto mb-4 bg-phdiGold/20 rounded-full flex items-center justify-center border-2 border-phdiGold">
+                    <i class="fa-solid fa-box-archive text-phdiGoldDark text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Arsip Digital PHDI</h2>
+                <p class="text-xs text-gray-500 font-medium mt-1">Provinsi Sulawesi Barat</p>
+            </div>
+            <form id="loginForm" class="p-8 space-y-5" onsubmit="handleLogin(event)">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-2">Email</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-envelope"></i>
+                        </span>
+                        <input type="email" id="loginEmail" required class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-phdiGold text-sm" placeholder="Masukkan email">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-2">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="loginPassword" required class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-phdiGold text-sm" placeholder="Masukkan password">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 bg-phdiGold hover:bg-phdiGoldDark text-white font-semibold rounded-lg shadow-md transition duration-200">
+                    Masuk
+                </button>
+                <div class="text-center text-xs text-gray-500 pt-2">
+                    <p>Demo Admin: <span class="font-mono text-phdiBlue">admin@phdisulbar.or.id</span> (admin123)</p>
+                    <p>Demo User: <span class="font-mono text-phdiBlue">user@phdisulbar.or.id</span> (user123)</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP STRUCTURE -->
+    <div id="appStructure" class="hidden flex-1 flex overflow-hidden">
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="w-64 bg-phdiBlue text-white flex flex-col sidebar-transition z-30">
+            <div class="p-5 flex items-center justify-between border-b border-blue-900/50">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-phdiGold rounded-lg flex items-center justify-center text-phdiBlue font-bold text-xl">
+                        <i class="fa-solid fa-place-of-worship"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-sm tracking-wide leading-tight">PHDI SULBAR</h1>
+                        <p class="text-[10px] text-yellow-400">Arsip Digital</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                <a href="#" onclick="switchTab('dashboard')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-sm font-medium bg-white/10" id="nav-dashboard">
+                    <i class="fa-solid fa-chart-pie w-5 text-phdiGold"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <div class="pt-4 pb-1 px-4 text-[10px] font-bold text-blue-300 uppercase tracking-wider">
+                    Kategori Dokumen
+                </div>
+
+                <a href="#" onclick="switchTab('Surat Masuk')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-sm font-medium text-gray-200" id="nav-Surat Masuk">
+                    <i class="fa-solid fa-inbox w-5 text-emerald-400"></i>
+                    <span>Surat Masuk</span>
+                </a>
+                <a href="#" onclick="switchTab('Surat Keluar')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-sm font-medium text-gray-200" id="nav-Surat Keluar">
+                    <i class="fa-solid fa-paper-plane w-5 text-sky-400"></i>
+                    <span>Surat Keluar</span>
+                </a>
+                <a href="#" onclick="switchTab('Surat Rekomendasi')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-sm font-medium text-gray-200" id="nav-Surat Rekomendasi">
+                    <i class="fa-solid fa-certificate w-5 text-amber-400"></i>
+                    <span>Surat Rekomendasi</span>
+                </a>
+                <a href="#" onclick="switchTab('Surat Keputusan')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/10 transition text-sm font-medium text-gray-200" id="nav-Surat Keputusan">
+                    <i class="fa-solid fa-gavel w-5 text-purple-400"></i>
+                    <span>Surat Keputusan</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-blue-900/50">
+                <button onclick="handleLogout()" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl bg-red-600/80 hover:bg-red-600 transition text-sm font-medium">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Keluar</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- TOP NAVIGATION -->
+            <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6 z-20">
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    <!-- Global Search -->
+                    <div class="relative w-64 md:w-96">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                        </span>
+                        <input type="text" id="globalSearch" onkeyup="handleGlobalSearch()" placeholder="Cari nomor, perihal, jenis..." class="w-full pl-9 pr-4 py-2 rounded-full border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-phdiGold text-xs">
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <div class="text-right hidden sm:block">
+                        <div id="userDisplayName" class="text-sm font-semibold text-gray-800">Administrator</div>
+                        <div id="userDisplayRole" class="text-[10px] text-phdiGoldDark font-bold uppercase">ADMIN</div>
+                    </div>
+                    <div class="w-9 h-9 bg-phdiGold text-white rounded-full flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN BODY -->
+            <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <!-- DASHBOARD VIEW -->
+                <div id="dashboardView" class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">Dashboard Ringkasan</h2>
+                            <p class="text-xs text-gray-500">Statistik arsip surat & dokumen PHDI Sulbar</p>
+                        </div>
+                        <button id="syncBtn" onclick="fetchDocumentsFromGSheet()" class="px-3 py-1.5 bg-phdiBlue text-white text-xs rounded-lg hover:bg-blue-900 transition flex items-center gap-2">
+                            <i class="fa-solid fa-rotate"></i> Sync Google Sheets
+                        </button>
+                    </div>
+
+                    <!-- STATS CARDS -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-gray-400 uppercase">Total Dokumen</p>
+                                <h3 id="statTotal" class="text-2xl font-bold text-gray-800 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-phdiGold/10 text-phdiGold rounded-xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-folder-closed"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-gray-400 uppercase">Surat Masuk</p>
+                                <h3 id="statMasuk" class="text-2xl font-bold text-emerald-600 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-inbox"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-gray-400 uppercase">Surat Keluar</p>
+                                <h3 id="statKeluar" class="text-2xl font-bold text-sky-600 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-gray-400 uppercase">Rekomendasi & SK</p>
+                                <h3 id="statLainnya" class="text-2xl font-bold text-purple-600 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-file-contract"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHARTS -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <h4 class="text-sm font-bold text-gray-700 mb-4">Distribusi Kategori Surat</h4>
+                            <div class="h-64 flex items-center justify-center">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <h4 class="text-sm font-bold text-gray-700 mb-4">Volume Arsip Terbaru</h4>
+                            <div class="h-64 flex items-center justify-center">
+                                <canvas id="barChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CATEGORY / TABLE VIEW -->
+                <div id="categoryView" class="hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                        <div>
+                            <h2 id="categoryTitle" class="text-xl font-bold text-gray-800">Daftar Dokumen</h2>
+                            <p id="categorySubtitle" class="text-xs text-gray-500">Kelola dan lihat daftar arsip terpilih</p>
+                        </div>
+                        <button id="addDocBtn" onclick="openModal()" class="px-4 py-2 bg-phdiGold hover:bg-phdiGoldDark text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Tambah Dokumen
+                        </button>
+                    </div>
+
+                    <!-- TABLE -->
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-gray-50 border-b border-gray-100 text-gray-500 font-semibold uppercase">
+                                    <tr>
+                                        <th class="py-3 px-4">No</th>
+                                        <th class="py-3 px-4">Tanggal</th>
+                                        <th class="py-3 px-4">Jenis</th>
+                                        <th class="py-3 px-4">Nomor Surat</th>
+                                        <th class="py-3 px-4">Perihal / Judul</th>
+                                        <th class="py-3 px-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="documentTableBody" class="divide-y divide-gray-100 text-gray-700">
+                                    <!-- Data Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="bg-white border-t border-gray-200 py-3 px-6 text-center text-xs text-gray-500">
+                &copy; 2026 Sekretariat PHDI (Parisada Hindu Dharma Indonesia) Provinsi Sulawesi Barat. All Rights Reserved.
+            </footer>
+        </div>
+    </div>
+
+    <!-- MODAL FORM TAMBAH DOKUMEN -->
+    <div id="docModal" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-gray-800">Tambah Dokumen Arsip</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="docForm" onsubmit="handleSaveDocument(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Tanggal Surat</label>
+                    <input type="date" id="docDate" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-phdiGold">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Jenis Surat</label>
+                    <select id="docType" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-phdiGold">
+                        <option value="Surat Masuk">Surat Masuk</option>
+                        <option value="Surat Keluar">Surat Keluar</option>
+                        <option value="Surat Rekomendasi">Surat Rekomendasi</option>
+                        <option value="Surat Keputusan">Surat Keputusan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Nomor Surat</label>
+                    <input type="text" id="docNumber" required placeholder="Contoh: 05/PHDI-SB/IX/2026" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-phdiGold">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Perihal / Judul Surat</label>
+                    <input type="text" id="docTitle" required placeholder="Perihal surat..." class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-phdiGold">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Link File (Google Drive)</label>
+                    <input type="url" id="docLink" required placeholder="https://drive.google.com/..." class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-phdiGold">
+                </div>
+                <div class="pt-3 flex gap-2 justify-end">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg hover:bg-gray-100">Batal</button>
+                    <button type="submit" id="saveBtn" class="px-4 py-2 bg-phdiGold text-white rounded-lg hover:bg-phdiGoldDark font-medium">Simpan Dokumen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // =========================================================
+        // IMPORTANT: PASTE GOOGLE APPS SCRIPT WEB APP URL BELOW
+        // =========================================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbzXHfSZFLvnWQnswYbJt7g3ZyVqzeKWYgu6gowJBEUSNGSAhvrmTZ903LJTb5ARw7Ef/exec"; // <-- GANTI URL INI
+
+        // App States
+        let currentUser = null;
+        let currentTab = 'dashboard';
+        let categoryChartObj = null;
+        let barChartObj = null;
+
+        // Default local dummy data (fallback)
+        let documentDatabase = [
+            { id: "1", date: "2026-09-20", type: "Surat Masuk", number: "102/BPN/SB/2026", title: "Undangan Rapat Koordinasi Pertanahan", link: "https://drive.google.com" },
+            { id: "2", date: "2026-09-22", type: "Surat Keluar", number: "015/PHDI-SB/IX/2026", title: "Permohonan Audiensi Gubernur", link: "https://drive.google.com" }
+        ];
+
+        // 1. FETCH DATA FROM GOOGLE SHEETS
+        async function fetchDocumentsFromGSheet() {
+            if (!API_URL || API_URL.includes("AKfycbx...")) {
+                console.log("Menggunakan data lokal dummy...");
+                updateDashboardStats();
+                initCharts();
+                return;
+            }
+
+            const syncBtn = document.getElementById("syncBtn");
+            if(syncBtn) syncBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+
+            try {
+                const res = await fetch(`${API_URL}?action=getDocuments`);
+                const data = await res.json();
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    documentDatabase = data;
+                }
+            } catch (err) {
+                console.error("Gagal mengambil data GSheet:", err);
+            } finally {
+                if(syncBtn) syncBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sync Google Sheets';
+                if (currentTab === 'dashboard') {
+                    updateDashboardStats();
+                    initCharts();
+                } else {
+                    renderDocumentTables();
+                }
+            }
+        }
+
+        // 2. LOGIN & USER MANAGEMENT
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+
+            if (email === 'admin@phdisulbar.or.id' && pass === 'admin123') {
+                currentUser = { name: 'Administrator PHDI', role: 'admin' };
+            } else if (email === 'user@phdisulbar.or.id' && pass === 'user123') {
+                currentUser = { name: 'Pengurus / User', role: 'user' };
+            } else {
+                alert('Email atau Password salah!');
+                return;
+            }
+
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('appStructure').classList.remove('hidden');
+            document.getElementById('userDisplayName').innerText = currentUser.name;
+            document.getElementById('userDisplayRole').innerText = currentUser.role.toUpperCase();
+
+            // Toggle Admin Action Button
+            document.getElementById('addDocBtn').style.display = currentUser.role === 'admin' ? 'block' : 'none';
+
+            fetchDocumentsFromGSheet();
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('appStructure').classList.add('hidden');
+        }
+
+        // 3. TAB NAVIGATION
+        function switchTab(tabName) {
+            currentTab = tabName;
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-white/10'));
+            const activeNav = document.getElementById(`nav-${tabName}`);
+            if (activeNav) activeNav.classList.add('bg-white/10');
+
+            if (tabName === 'dashboard') {
+                document.getElementById('dashboardView').classList.remove('hidden');
+                document.getElementById('categoryView').classList.add('hidden');
+                updateDashboardStats();
+                initCharts();
+            } else {
+                document.getElementById('dashboardView').classList.add('hidden');
+                document.getElementById('categoryView').classList.remove('hidden');
+                document.getElementById('categoryTitle').innerText = tabName;
+                document.getElementById('categorySubtitle').innerText = `Daftar arsip kategori ${tabName}`;
+                renderDocumentTables();
+            }
+        }
+
+        // 4. RENDER TABLE DATA
+        function renderDocumentTables(filterQuery = "") {
+            const tbody = document.getElementById('documentTableBody');
+            tbody.innerHTML = "";
+
+            let docs = documentDatabase;
+            if (currentTab !== 'dashboard') {
+                docs = docs.filter(d => d.type === currentTab);
+            }
+
+            if (filterQuery) {
+                const q = filterQuery.toLowerCase();
+                docs = docs.filter(d => 
+                    d.number.toLowerCase().includes(q) || 
+                    d.title.toLowerCase().includes(q) || 
+                    d.type.toLowerCase().includes(q)
+                );
+            }
+
+            if (docs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-400">Tidak ada dokumen ditemukan</td></tr>`;
+                return;
+            }
+
+            docs.forEach((doc, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 border-b border-gray-100";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-gray-500">${idx + 1}</td>
+                    <td class="py-3 px-4">${doc.date}</td>
+                    <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-[10px] font-semibold">${doc.type}</span></td>
+                    <td class="py-3 px-4 font-mono font-medium">${doc.number}</td>
+                    <td class="py-3 px-4 font-medium">${doc.title}</td>
+                    <td class="py-3 px-4 text-center space-x-2">
+                        <a href="${doc.link}" target="_blank" class="px-2.5 py-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-xs font-semibold inline-block">
+                            <i class="fa-solid fa-eye"></i> Lihat
+                        </a>
+                        ${currentUser && currentUser.role === 'admin' ? `
+                            <button onclick="handleDeleteDoc('${doc.id}')" class="px-2.5 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-semibold">
+                                <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 5. GLOBAL SEARCH
+        function handleGlobalSearch() {
+            const query = document.getElementById('globalSearch').value;
+            if (currentTab === 'dashboard') {
+                switchTab('Surat Masuk');
+            }
+            renderDocumentTables(query);
+        }
+
+        // 6. SAVE & DELETE DOCUMENT
+        async function handleSaveDocument(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerText = "Menyimpan...";
+            saveBtn.disabled = true;
+
+            const newDoc = {
+                id: Date.now().toString(),
+                date: document.getElementById('docDate').value,
+                type: document.getElementById('docType').value,
+                number: document.getElementById('docNumber').value,
+                title: document.getElementById('docTitle').value,
+                link: document.getElementById('docLink').value
+            };
+
+            documentDatabase.unshift(newDoc);
+
+            // POST to Google Sheets
+            if (API_URL && !API_URL.includes("AKfycbx...")) {
+                try {
+                    await fetch(API_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ action: "addDocument", ...newDoc })
+                    });
+                } catch (err) {
+                    console.error("Gagal mengirim ke GSheet:", err);
+                }
+            }
+
+            saveBtn.innerText = "Simpan Dokumen";
+            saveBtn.disabled = false;
+            closeModal();
+            
+            if (currentTab === 'dashboard') switchTab(newDoc.type);
+            else renderDocumentTables();
+        }
+
+        async function handleDeleteDoc(id) {
+            if (!confirm("Apakah Anda yakin ingin menghapus dokumen ini?")) return;
+            
+            documentDatabase = documentDatabase.filter(d => d.id !== id);
+            renderDocumentTables();
+
+            if (API_URL && !API_URL.includes("AKfycbx...")) {
+                try {
+                    await fetch(API_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ action: "deleteDocument", id: id })
+                    });
+                } catch (err) {
+                    console.error("Gagal hapus di GSheet:", err);
+                }
+            }
+        }
+
+        // 7. STATS & CHARTS
+        function updateDashboardStats() {
+            const total = documentDatabase.length;
+            const masuk = documentDatabase.filter(d => d.type === 'Surat Masuk').length;
+            const keluar = documentDatabase.filter(d => d.type === 'Surat Keluar').length;
+            const lainnya = total - (masuk + keluar);
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statMasuk').innerText = masuk;
+            document.getElementById('statKeluar').innerText = keluar;
+            document.getElementById('statLainnya').innerText = lainnya;
+        }
+
+        function initCharts() {
+            const masuk = documentDatabase.filter(d => d.type === 'Surat Masuk').length;
+            const keluar = documentDatabase.filter(d => d.type === 'Surat Keluar').length;
+            const rek = documentDatabase.filter(d => d.type === 'Surat Rekomendasi').length;
+            const sk = documentDatabase.filter(d => d.type === 'Surat Keputusan').length;
+
+            if (categoryChartObj) categoryChartObj.destroy();
+            if (barChartObj) barChartObj.destroy();
+
+            const ctx1 = document.getElementById('categoryChart').getContext('2d');
+            categoryChartObj = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Surat Masuk', 'Surat Keluar', 'Rekomendasi', 'Keputusan'],
+                    datasets: [{
+                        data: [masuk, keluar, rek, sk],
+                        backgroundColor: ['#10B981', '#0EA5E9', '#F59E0B', '#A855F7']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctx2 = document.getElementById('barChart').getContext('2d');
+            barChartObj = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Masuk', 'Keluar', 'Rekomendasi', 'SK'],
+                    datasets: [{
+                        label: 'Jumlah File',
+                        data: [masuk, keluar, rek, sk],
+                        backgroundColor: '#D4AF37'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // MODAL HELPERS
+        function openModal() {
+            document.getElementById('docModal').classList.remove('hidden');
+        }
+        function closeModal() {
+            document.getElementById('docModal').classList.add('hidden');
+            document.getElementById('docForm').reset();
+        }
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-ml-64');
+        }
+    </script>
+</body>
+</html>
